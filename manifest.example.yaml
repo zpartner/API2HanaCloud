@@ -1,0 +1,20 @@
+---
+applications:
+  - name: api2hanacloud
+    path: .
+    memory: 512M
+    disk_quota: 1024M
+    instances: 1
+    buildpacks:
+      - python_buildpack
+    command: python -m uvicorn main:app --host 0.0.0.0 --port $PORT
+    env:
+      FLASK_ENV: production
+      # Authentication
+      API_USERNAME: ((YOUR_USERNAME))
+      API_PASSWORD: ((YOUR_PASSWORD))
+      HANA_HOST: ((YOUR_HANA_HOST))
+      HANA_PORT: "443"
+      HANA_USER: ((YOUR_HANA_USER))
+      HANA_PASSWORD: ((YOUR_HANA_PASSWORD))
+      HANA_SCHEMA: ((YOUR_HANA_SCHEMA))

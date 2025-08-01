@@ -1,0 +1,7 @@
+/mta_archives/
+/node_modules/
+/resources/
+.env
+testing.ipynb
+manifest.yaml
+/__pycache__/
