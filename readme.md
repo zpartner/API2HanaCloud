@@ -26,7 +26,6 @@ API2HANACLOUD/
 ├── .env.example           # Example environment config
 ├── manifest.yaml          # Cloud Foundry deployment
 ├── requirements.txt       # Python dependencies
-└── testing.ipynb          # Optional dev notebook
 ```
 
 ---
