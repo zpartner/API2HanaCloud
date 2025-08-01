@@ -1,20 +1,20 @@
 from hana_ml.dataframe import ConnectionContext
 from datetime import datetime
-import os
 import math
-from dotenv import load_dotenv
-
-load_dotenv()
+from config import get_vcap_credentials
 
 MAX_NVARCHAR_LENGTH = 5000
 MIN_NVARCHAR_LENGTH = 200
 
-def connect_hana():
-    hana_host = os.getenv("HANA_HOST")
-    hana_port = os.getenv("HANA_PORT")
-    hana_user = os.getenv("HANA_USER")
-    hana_password = os.getenv("HANA_PASSWORD")
+secrets = get_vcap_credentials("api2hanacloud_secrets")
+hana_host = secrets.get("HANA_HOST")
+hana_port = secrets.get("HANA_PORT")
+hana_user = secrets.get("HANA_USER")
+hana_password = secrets.get("HANA_PASSWORD")
+hana_schema = secrets.get("HANA_SCHEMA", "MY_SCHEMA") 
 
+def connect_hana():
+    
     # Validate presence (fail early with clear message)
     if not all([hana_host, hana_port, hana_user, hana_password]):
         raise ValueError("Missing one or more SAP HANA connection environment variables.")
@@ -81,7 +81,7 @@ def infer_column_types(records) -> dict:
     return column_types
 
 def create_table_if_needed(cursor, table: str, column_types: dict):
-    schema = os.getenv("HANA_SCHEMA", "MY_SCHEMA")
+    schema = secrets.get("HANA_SCHEMA", "MY_SCHEMA")
     # Check if table exists
     cursor.execute(f"""
         SELECT COUNT(*) FROM TABLES 
@@ -98,7 +98,7 @@ def create_table_if_needed(cursor, table: str, column_types: dict):
 
 
 def insert_records(cursor, conn, table: str, column_types: dict, records: list):
-    schema = os.getenv("HANA_SCHEMA", "MY_SCHEMA")
+    schema = secrets.get("HANA_SCHEMA", "MY_SCHEMA")
     cols = list(column_types.keys())
     cols.append("UPLOAD_TS")
 

@@ -1,16 +1,19 @@
-import os
-import secrets
+import secrets as pysecrets
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from config import get_vcap_credentials
 
 security = HTTPBasic()
-API_USERNAME = os.getenv("API_USERNAME", "admin")
-API_PASSWORD = os.getenv("API_PASSWORD", "secret")
+
+api_secrets = get_vcap_credentials("api2hanacloud_secrets")
+API_USERNAME = api_secrets.get("API_USERNAME")
+API_PASSWORD = api_secrets.get("API_PASSWORD")
 
 def authenticate(credentials: HTTPBasicCredentials = Depends(security)):
     if not (
-        secrets.compare_digest(credentials.username, API_USERNAME) and
-        secrets.compare_digest(credentials.password, API_PASSWORD)
+        pysecrets.compare_digest(str(credentials.username), str(API_USERNAME)) and
+        pysecrets.compare_digest(str(credentials.password), str(API_PASSWORD))
     ):
         raise HTTPException(status_code=401, detail="Unauthorized")
     return credentials.username
+
